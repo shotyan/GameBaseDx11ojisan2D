@@ -4,6 +4,9 @@
 #include "Ground.h"
 #include "Engine/Camera.h"
 #include "Engine/Text.h"
+#include "Engine/Input.h"
+#include "Engine/SceneManager.h"
+
 
 namespace {
 	Ground* pGround;						// 地面オブジェクトへのポインタ
@@ -39,6 +42,12 @@ void TestScene::Update()
 	if (pPlayer_->GetPosition().x > START_POS.x && pPlayer_->GetPosition().x < END_POS_X) {
 		Camera::SetPosition({ pPlayer_->GetPosition().x, START_POS.y + CAMERA_HEIGHT,-22 });
 		Camera::SetTarget({ pPlayer_->GetPosition().x, START_POS.y + CAMERA_HEIGHT,0 });
+	}
+
+	if (Input::IsKeyDown(DIK_P))
+	{
+		SceneManager* pSceneManager = (SceneManager*)(this->GetParent());
+		pSceneManager->ChangeScene(SCENE_ID_GAME_OVER);
 	}
 
 }
