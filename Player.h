@@ -75,4 +75,5 @@ private:
 
 	float jumpVelocity_;						// ジャンプ中の垂直速度
 	bool isGrounded_;							// 地面に接地しているか
+	float jumpHoldTime_;							// ジャンプボタンを押し続ける時間
 };

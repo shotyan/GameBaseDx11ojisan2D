@@ -29,6 +29,8 @@ namespace
 	const float JUMP_POWER = 0.2f;			// ジャンプ開始時の上向き速度
 	const float GRAVITY = 0.01f;			// 1フレームごとに減少する垂直速度
 	const float AIR_CONTROL = 0.5f;			// 空中での加速・減速の強さ（地上比）
+	const float JUMP_HOLD_POWER = 0.005f;	// ジャンプボタンを押し続けたときの上向き加速度
+	const float MAX_JUMP_HOLD_TIME = 0.25f;	// ジャンプボタンを押し続けたときの最大時間（秒）
 
 	// ブロックの配置間隔・水平寸法・ゲーム上の歩行面。
 	const float BLOCK_INTERVAL_Y = 1.0f;		// ブロック1マス分の縦方向の間隔
@@ -147,7 +149,8 @@ Player::Player(GameObject* parent)
 	currentSpeed_(0.0f),
 	turnFrame_(0.0f),
 	jumpVelocity_(0.0f),
-	isGrounded_(true)
+	isGrounded_(true),
+	jumpHoldTime_(0.0f)
 {
 }
 
@@ -358,6 +361,7 @@ bool Player::HandleInput()
 	{
 		jumpVelocity_ = JUMP_POWER;
 		isGrounded_ = false;
+		jumpHoldTime_ = 0.0f;
 	}
 
 	// --------------------------------------------------------
@@ -469,6 +473,14 @@ void Player::UpdateJump()
 
 	const float dy = jumpVelocity_;
 	transform_.position_.y += dy;
+	// ジャンプボタンを押し続けている間は、少しだけ上昇力を追加する
+	if (jumpVelocity_ > 0.0f &&
+		Input::IsKey(DIK_SPACE) &&
+		jumpHoldTime_ < MAX_JUMP_HOLD_TIME)
+	{
+		jumpVelocity_ += JUMP_HOLD_POWER;
+		jumpHoldTime_ += 1.0f / 60.0f;
+	}
 	jumpVelocity_ -= GRAVITY;
 	const CollisionRect after = MakePlayerRect(transform_.position_);
 	float resolvedY = transform_.position_.y;
